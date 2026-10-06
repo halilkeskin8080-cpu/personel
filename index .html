@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Personel Yönetim Sistemi</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:dark;
+--bg:#0f172a;--tx:#f1f5f9;--mu:#94a3b8;--pr:#8b5cf6;--ac:#06b6d4;--bd:rgba(139,92,246,.3)}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:linear-gradient(135deg,#0f172a,#1e293b 50%,#334155);background-color:var(--bg);color:var(--tx);min-height:100vh}
+.wrap{max-width:1100px;margin:0 auto;padding:20px 16px}
+.glass{background:rgba(30,41,59,.75);border:1px solid var(--bd);border-radius:18px;padding:20px}
+input,select{width:100%;min-width:0;height:46px;padding:0 13px;border-radius:11px;border:1px solid var(--bd);background:rgba(15,23,42,.6);color:var(--tx);font:inherit}
+input[type=date]{-webkit-appearance:none;appearance:none;display:block;text-align:left;padding-right:8px}
+input:focus,select:focus{outline:none;border-color:var(--pr);box-shadow:0 0 0 3px rgba(139,92,246,.25)}
+label{display:block;font-size:13px;color:var(--mu);margin:12px 0 5px}
+button{font:inherit;cursor:pointer;border:0;border-radius:11px;padding:11px 18px;color:#fff;font-weight:600}
+button:disabled{opacity:.6;cursor:wait}
+.pri{background:linear-gradient(135deg,#8b5cf6,#7c3aed)}
+.sec{background:rgba(6,182,212,.15);border:1px solid var(--ac);color:var(--ac)}
+.dng{background:rgba(239,68,68,.2);color:#fca5a5}
+.full{width:100%;margin-top:16px}
+a{color:var(--ac);cursor:pointer}
+.center{min-height:calc(100vh - 40px);display:flex;align-items:center;justify-content:center}
+.login{width:100%;max-width:380px;text-align:center}
+.login h1{margin:14px 0 2px;font-size:24px}.login p{color:var(--mu);margin:0 0 8px;font-size:14px}.login .l{text-align:left}
+.msg{margin-top:12px;font-size:14px;min-height:18px}.err{color:#fca5a5}.ok{color:#86efac}
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:20px}
+.brand{display:flex;align-items:center;gap:12px}.brand h1{margin:0;font-size:22px}.brand small{color:var(--ac)}
+.acts{display:flex;flex-wrap:wrap;gap:8px}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:18px}
+@media(min-width:700px){.stats{grid-template-columns:repeat(4,1fr)}}
+.stat{background:rgba(139,92,246,.15);border:1px solid var(--bd);border-radius:16px;padding:14px}
+.stat span{font-size:13px;color:var(--mu)}.stat b{display:block;font-size:28px;margin-top:4px}
+.filters{display:grid;gap:10px;margin-bottom:18px}
+@media(min-width:700px){.filters{grid-template-columns:1fr 200px 160px}}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(290px,1fr))}
+.emp h3{margin:0 0 2px}.emp .p{color:var(--ac);font-size:14px;margin-bottom:8px}.emp .r{font-size:13px;color:var(--mu);margin:3px 0;word-break:break-all}
+.badge{float:right;font-size:12px;padding:3px 10px;border-radius:99px;font-weight:600}
+.on{background:rgba(34,197,94,.2);color:#86efac}.off{background:rgba(239,68,68,.2);color:#fca5a5}
+.row2{display:flex;gap:8px;margin-top:12px}.row2 button{flex:1;padding:8px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:flex-start;justify-content:center;padding:20px 14px;overflow:auto;z-index:9}
+.modal.show{display:flex}.modal .glass{width:100%;max-width:560px;background:#1e293b}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;align-items:end}
+.two>div{min-width:0}
+@media(max-width:480px){.two.stack{grid-template-columns:1fr}}
+.xl{overflow-x:auto;border:1px solid var(--bd);border-radius:12px}
+table{border-collapse:collapse;min-width:960px;width:100%}
+th{background:#5fe3e8;color:#0f172a;text-align:left;padding:10px;font-size:14px}
+td{border:1px solid rgba(148,163,184,.2);padding:0}
+td.n{width:42px;text-align:center;color:var(--mu);font-size:12px;background:rgba(15,23,42,.6)}
+td.x{width:42px;text-align:center}td.x button{padding:4px 9px;background:none;color:#fca5a5}
+td input{border:0;border-radius:0;background:transparent;height:44px}
+td input:focus{background:rgba(139,92,246,.2);box-shadow:inset 0 0 0 2px var(--pr)}
+</style>
+</head>
+<body>
+<div id="app"><div class="wrap center"><p style="color:var(--mu)">Yükleniyor…</p></div></div>
+
+<div class="modal" id="modal"><div class="glass">
+<h2 id="mt" style="margin:0 0 4px">Yeni Personel</h2>
+<form id="f">
+<div class="two"><div><label>Ad *</label><input name="first_name" required></div><div><label>Soyad *</label><input name="last_name" required></div></div>
+<label>E-posta *</label><input name="email" type="email" required>
+<label>Telefon</label><input name="phone" type="tel">
+<div class="two"><div><label>Departman *</label><select name="department" id="dep"></select></div><div><label>Durum</label><select name="status"><option>Aktif</option><option>Pasif</option></select></div></div>
+<label>Pozisyon *</label><input name="position" required>
+<div class="two stack"><div><label>İşe Başlama Tarihi *</label><input name="start_date" type="date" required></div><div><label>Maaş (₺)</label><input name="salary" inputmode="numeric" placeholder="Örn. 45000"></div></div>
+<div class="msg err" id="fm"></div>
+<div class="two" style="margin-top:12px"><button class="pri" id="sv" type="submit">Kaydet</button><button type="button" class="sec" id="cx">İptal</button></div>
+</form></div></div>
+
+<div class="modal" id="dm"><div class="glass" style="max-width:400px;text-align:center">
+<h3 style="margin:0 0 8px">Personeli Sil</h3><p style="color:var(--mu);margin:0 0 16px">Bu personel kaydını silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.</p>
+<div class="two"><button type="button" id="dy" style="background:#dc2626">Evet, Sil</button><button class="sec" id="dn" type="button">Vazgeç</button></div></div></div>
+
+<script>
+window.__errs=[];
+window.addEventListener('error',function(e){window.__errs.push(e.message||'script yüklenemedi')});
+window.addEventListener('unhandledrejection',function(e){window.__errs.push(String(e.reason&&(e.reason.message||e.reason)))});
+setTimeout(function(){
+ if(window.__ready)return;
+ var box=function(t){document.getElementById('app').innerHTML='<div class="wrap center"><div class="glass login"><h2>Firebase yüklenemedi</h2><p style="color:#94a3b8">Hata ayrıntısı (fotoğrafını gönderin):</p><p style="color:#fca5a5;word-break:break-word;font-size:13px">'+t+'</p></div></div>'};
+ import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js').then(function(){
+  box('Firebase dosyası yüklendi. Hata: '+(window.__errs.join(' | ')||'bilinmiyor'));
+ }).catch(function(e){box('Firebase dosyası indirilemedi: '+(e&&e.message||e))});
+},8000);
+</script>
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,createUserWithEmailAndPassword,signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {getFirestore,collection,onSnapshot,addDoc,updateDoc,deleteDoc,doc} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig={
+  apiKey:"AIzaSyAvcKHptswPQgFcQTj3xaPV50GDPWg4OeY",
+  authDomain:"personel-d3904.firebaseapp.com",
+  projectId:"personel-d3904",
+  storageBucket:"personel-d3904.firebasestorage.app",
+  messagingSenderId:"616041835736",
+  appId:"1:616041835736:web:b8bbd42b682f6bc38bbbad"
+};
+const fbApp=initializeApp(firebaseConfig),auth=getAuth(fbApp),db=getFirestore(fbApp),COL=collection(db,'personel');
+
+const DEPS=['Bilgi İşlem','Pazarlama','İnsan Kaynakları','Finans','Satış','Operasyon'];
+const COLS=['first_name','last_name','email','phone','department','position','start_date'];
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+// Kullanıcı adı -> e-posta; Firebase en az 6 karakter şifre istediği için şifreye sabit ek yapılır (şifre "1" olabilsin diye)
+const mail=u=>u+'@personel.app', fpw=p=>'pys#'+p+'#2026';
+const uname=()=>auth.currentUser?auth.currentUser.email.split('@')[0]:'';
+
+let user=null,ready=false,items=[],unsub=null,mode='login',editId=null,delId=null,dirty=false;
+
+const logo=(s=64)=>`<svg width="${s}" height="${s}" viewBox="0 0 64 64"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8b5cf6"/><stop offset="1" stop-color="#06b6d4"/></linearGradient></defs><path d="M32 3l24 14v30L32 61 8 47V17z" fill="url(#g)"/><circle cx="32" cy="25" r="7" fill="#fff"/><circle cx="20" cy="29" r="4.5" fill="#fff" opacity=".7"/><circle cx="44" cy="29" r="4.5" fill="#fff" opacity=".7"/><path d="M19 47c0-8 6-13 13-13s13 5 13 13z" fill="#fff"/></svg>`;
+
+function errText(e){
+  const c=e&&e.code||'';
+  if(c.includes('email-already-in-use'))return 'Bu kullanıcı adı zaten var.';
+  if(c.includes('invalid-credential')||c.includes('wrong-password')||c.includes('user-not-found'))return 'Kullanıcı adı veya şifre hatalı.';
+  if(c.includes('operation-not-allowed'))return 'Firebase\'de E-posta/Şifre girişi açık değil.';
+  if(c.includes('network'))return 'İnternet bağlantısı yok.';
+  if(c.includes('too-many'))return 'Çok fazla deneme. Biraz bekleyin.';
+  if(c.includes('permission-denied'))return 'Yetki hatası: Firestore kurallarını kontrol edin.';
+  return 'Hata: '+(c||e.message||e);
+}
+
+function loginView(){
+ const reg=mode==='register';
+ $('app').innerHTML=`<div class="wrap center"><div class="glass login">${logo(84)}
+ <h1>Personel Yönetim Sistemi</h1><p>${reg?'Yeni hesap oluştur':'Hesabınıza giriş yapın'}</p>
+ <form id="lf" class="l"><label>Kullanıcı adı</label><input id="u" autocomplete="username" autocapitalize="none" required>
+ <label>Şifre</label><input id="p" type="password" autocomplete="current-password" required>
+ ${reg?'<label>Şifre (tekrar)</label><input id="p2" type="password" required>':''}
+ <button class="pri full" id="lb">${reg?'Hesap Oluştur':'Giriş'}</button></form>
+ <div class="msg" id="m"></div>
+ <p style="margin-top:8px">${reg?'Hesabın var mı? <a id="sw">Giriş yap</a>':'Hesabın yok mu? <a id="sw">Yeni hesap oluştur</a>'}</p></div></div>`;
+ $('sw').onclick=()=>{mode=reg?'login':'register';loginView()};
+ $('lf').onsubmit=async e=>{e.preventDefault();
+  const u=$('u').value.trim().toLowerCase(),p=$('p').value,m=$('m');
+  m.className='msg err';
+  if(!/^[a-z0-9._-]{2,30}$/.test(u)){m.textContent='Kullanıcı adı: 2-30 karakter; küçük harf (a-z), rakam, nokta, tire veya alt çizgi. Türkçe karakter kullanmayın.';return}
+  if(reg&&p!==$('p2').value){m.textContent='Şifreler eşleşmiyor.';return}
+  $('lb').disabled=true;m.textContent='';
+  try{
+   if(reg){await createUserWithEmailAndPassword(auth,mail(u),fpw(p))}
+   else{
+    try{await signInWithEmailAndPassword(auth,mail(u),fpw(p))}
+    catch(err){
+     // admin hesabı ilk kez giriliyorsa otomatik oluştur
+     if(u==='admin'&&p==='1'&&/invalid-credential|user-not-found/.test(err.code||'')){
+      try{await createUserWithEmailAndPassword(auth,mail(u),fpw(p))}catch(e2){throw err}
+     }else throw err;
+    }
+   }
+   location.hash='#personel';
+  }catch(err){m.textContent=errText(err);$('lb').disabled=false}
+ };
+}
+
+function head(sub,btns){
+ return `<header><div class="brand">${logo(46)}<div><h1>Personel Yönetim Sistemi</h1><small>${sub}</small></div></div>
+ <div class="acts">${btns}<button class="dng" id="out">Çıkış (${esc(uname())})</button></div></header>`;
+}
+function bindOut(){$('out').onclick=()=>signOut(auth)}
+
+function appView(){
+ $('app').innerHTML=`<div class="wrap">${head('Çalışan bilgilerini yönetin','<button class="sec" id="toX">📊 Excel Tablosu</button><button class="pri" id="add">+ Yeni Personel</button>')}
+ <div class="stats"><div class="stat"><span>Toplam Personel</span><b id="s1">0</b></div><div class="stat"><span>Aktif Çalışan</span><b id="s2" style="color:#86efac">0</b></div><div class="stat"><span>Departman</span><b id="s3" style="color:#67e8f9">0</b></div><div class="stat"><span>Bu Ay</span><b id="s4" style="color:#fcd34d">0</b></div></div>
+ <div class="glass filters"><input id="q" placeholder="İsim, e-posta, pozisyon ara..."><select id="fd"><option value="">Tüm Departmanlar</option>${DEPS.map(d=>`<option>${d}</option>`).join('')}</select><select id="fs"><option value="">Tüm Durumlar</option><option>Aktif</option><option>Pasif</option></select></div>
+ <div id="list"></div></div>`;
+ bindOut();
+ $('toX').onclick=()=>location.hash='#excel';
+ $('add').onclick=()=>openModal();
+ ['q','fd','fs'].forEach(i=>$(i).oninput=renderList);
+ renderList();
+}
+function renderList(){
+ if(!$('list'))return;
+ const q=$('q').value.toLowerCase(),d=$('fd').value,s=$('fs').value,ym=new Date().toISOString().slice(0,7);
+ $('s1').textContent=items.length;$('s2').textContent=items.filter(e=>e.status==='Aktif').length;
+ $('s3').textContent=new Set(items.map(e=>e.department).filter(Boolean)).size;
+ $('s4').textContent=items.filter(e=>(e.start_date||'').startsWith(ym)).length;
+ if(!items.length){$('list').innerHTML='<div class="glass" style="text-align:center;padding:40px"><h3>Henüz personel kaydı yok</h3><p style="color:var(--mu)">Yeni personel eklemek için yukarıdaki butona tıklayın</p></div>';return}
+ const f=items.filter(e=>(!d||e.department===d)&&(!s||e.status===s)&&[e.first_name,e.last_name,e.email,e.position].join(' ').toLowerCase().includes(q));
+ $('list').innerHTML='<div class="grid">'+f.map(e=>`<div class="glass emp"><span class="badge ${e.status==='Pasif'?'off':'on'}">${esc(e.status||'Aktif')}</span>
+ <h3>${esc((e.first_name||'')+' '+(e.last_name||'')).trim()||'(isimsiz)'}</h3><div class="p">${esc(e.position)}</div>
+ <div class="r">✉ ${esc(e.email)||'-'}</div><div class="r">☎ ${esc(e.phone)||'-'}</div><div class="r">🏢 ${esc(e.department)||'-'}</div><div class="r">📅 ${esc(e.start_date)||'-'}${e.salary?' · ₺'+esc(e.salary):''}</div>
+ <div class="row2"><button class="sec" data-e="${e.id}">Düzenle</button><button class="dng" data-d="${e.id}">Sil</button></div></div>`).join('')+'</div>';
+ $('list').querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>openModal(b.dataset.e));
+ $('list').querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>askDel(b.dataset.d));
+}
+function askDel(id){delId=id;$('dm').classList.add('show')}
+$('dn').onclick=()=>{delId=null;$('dm').classList.remove('show')};
+$('dy').onclick=async()=>{const id=delId;delId=null;$('dm').classList.remove('show');
+ if(id){try{await deleteDoc(doc(db,'personel',id))}catch(e){console.error(e)}}};
+
+function openModal(id){
+ editId=id||null;const f=$('f');f.reset();$('fm').textContent='';
+ $('dep').innerHTML=DEPS.map(d=>`<option>${d}</option>`).join('');
+ $('mt').textContent=id?'Personel Düzenle':'Yeni Personel';
+ if(id){const e=items.find(x=>x.id===id);Object.keys(e).forEach(k=>{if(f.elements[k])f.elements[k].value=e[k]})}
+ $('modal').classList.add('show');
+}
+$('cx').onclick=()=>$('modal').classList.remove('show');
+$('f').onsubmit=async e=>{e.preventDefault();
+ const o=Object.fromEntries(new FormData(e.target));$('sv').disabled=true;$('fm').textContent='';
+ try{
+  if(editId)await updateDoc(doc(db,'personel',editId),o);
+  else{if(items.length>=999){$('fm').textContent='Maksimum 999 kayıt sınırına ulaşıldı.';$('sv').disabled=false;return}
+   await addDoc(COL,{...o,createdAt:Date.now()})}
+  $('modal').classList.remove('show');
+ }catch(err){$('fm').textContent=errText(err)}
+ $('sv').disabled=false;
+};
+
+function excelView(){
+ $('app').innerHTML=`<div class="wrap">${head('Excel tablosu — hücrelere doğrudan yazın','<button class="sec" id="back">← Personel Sayfası</button><button class="sec" id="cp">📋 Excel için kopyala</button><button class="pri" id="ar">+ Satır Ekle</button>')}
+ <div class="xl"><table><thead><tr><th style="width:42px"></th>${COLS.map(c=>`<th>${c}</th>`).join('')}<th style="width:42px"></th></tr></thead><tbody id="tb"></tbody></table></div>
+ <div class="msg ok" id="xm"></div></div>`;
+ bindOut();
+ $('back').onclick=()=>location.hash='#personel';
+ $('ar').onclick=async()=>{try{await addDoc(COL,{status:'Aktif',createdAt:Date.now()})}catch(e){$('xm').className='msg err';$('xm').textContent=errText(e)}};
+ $('cp').onclick=async()=>{
+  const t=[COLS.join('\t'),...items.map(e=>COLS.map(c=>e[c]||'').join('\t'))].join('\n');
+  try{await navigator.clipboard.writeText(t);$('xm').className='msg ok';$('xm').textContent='Kopyalandı — Excel\'e yapıştırabilirsiniz.'}catch(e){$('xm').textContent='Kopyalama bu tarayıcıda engellendi.'}};
+ $('tb').onchange=async ev=>{const t=ev.target,tr=t.closest('tr');if(!tr||!t.dataset.c)return;
+  try{await updateDoc(doc(db,'personel',tr.dataset.id),{[t.dataset.c]:t.value});$('xm').className='msg ok';$('xm').textContent='Kaydedildi ✓'}
+  catch(e){$('xm').className='msg err';$('xm').textContent=errText(e)}};
+ $('tb').onclick=ev=>{const b=ev.target.closest('[data-x]');if(b)askDel(b.dataset.x)};
+ $('tb').addEventListener('focusout',()=>setTimeout(()=>{if(dirty&&!document.activeElement.closest('#tb')){dirty=false;rows()}},50));
+ rows();
+}
+function rows(){
+ const tb=$('tb');if(!tb)return;
+ if(!items.length){tb.innerHTML=`<tr><td colspan="9" style="padding:24px;text-align:center;color:var(--mu)">Henüz satır yok. "+ Satır Ekle" ile başlayın.</td></tr>`;return}
+ tb.innerHTML=items.map((e,i)=>`<tr data-id="${e.id}"><td class="n">${i+1}</td>${COLS.map(c=>`<td><input data-c="${c}" type="${c==='start_date'?'date':c==='email'?'email':'text'}" value="${esc(e[c])}"></td>`).join('')}<td class="x"><button data-x="${e.id}" title="Sil">✕</button></td></tr>`).join('');
+}
+
+function refresh(){
+ const h=location.hash;
+ if(h==='#excel'){ if(document.activeElement&&document.activeElement.closest&&document.activeElement.closest('#tb')){dirty=true}else rows() }
+ else renderList();
+}
+function route(){
+ if(!ready)return;
+ const h=location.hash;
+ if(!user){if(h!=='#giris')history.replaceState(null,'','#giris');loginView();return}
+ if(h==='#excel')excelView();else{if(h!=='#personel')history.replaceState(null,'','#personel');appView()}
+}
+onAuthStateChanged(auth,u=>{
+ user=u;ready=true;window.__ready=true;
+ if(unsub){unsub();unsub=null}
+ items=[];
+ if(u){
+  unsub=onSnapshot(COL,snap=>{
+   items=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
+   refresh();
+  },err=>{console.error(err);const m=$('xm')||$('list');if(m)m.innerHTML='<div class="msg err">'+esc(errText(err))+'</div>'});
+ }
+ route();
+});
+window.addEventListener('hashchange',route);
+</script>
+</body>
+</html>
